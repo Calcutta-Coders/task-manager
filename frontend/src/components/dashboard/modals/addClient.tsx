@@ -32,8 +32,7 @@ const AddClientModal: React.FC<AddClientModalProps> = ({ open, onClose, onAddCli
   const [clients, setClients] = React.useState<Client[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [showAddForm, setShowAddForm] = React.useState(false);
-  const [newClient, setNewClient] = React.useState({
-    _id: '',
+  const [newClient, setNewClient] = React.useState<Omit<Client, '_id'>>({
     name: '',
     email: '',
     company: '',

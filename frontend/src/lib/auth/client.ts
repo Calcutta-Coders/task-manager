@@ -1,61 +1,60 @@
 'use client';
+
 import axios from 'axios';
 
+// Example usage
+
+import type { User } from '@/types/user';
 
 async function login(email: any, password: any) {
-    try {
-        const response = await axios.post('http://127.0.0.1:5500/api/auth/login', {
-            email,
-            password
-        });
-        // Handle successful login
-        console.log('Login successful:', response.data);
-        console.log(response.data)
-        // Save the token to local storage or use it as needed
-        localStorage.setItem('custom-auth-token', response.data.token);
-    } catch (error:any) {
-        if (error.response) {
-            // Handle errors
-            console.error('Login failed:', error.response.data.message);
-        } else {
-            console.error('Error:', error.message);
-        }
+  try {
+    const response = await axios.post('http://127.0.0.1:5500/api/auth/login', {
+      email,
+      password,
+    });
+    // Handle successful login
+    console.log('Login successful:', response.data);
+    console.log(response.data);
+    // Save the token to local storage or use it as needed
+    localStorage.setItem('custom-auth-token', response.data.token);
+    // localStorage.setItem('user-type', response.data.)
+  } catch (error: any) {
+    if (error.response) {
+      // Handle errors
+      console.error('Login failed:', error.response.data.message);
+    } else {
+      console.error('Error:', error.message);
     }
+  }
 }
 
 // // Example usage
 // login('user@example.com', 'password123');
 
-
-
 async function signup(firstName: string, lastName: string, email: string, password: string, team: string, key: string) {
-    try {
-        const response = await axios.post('http://localhost:5500/api/auth/signup', {
-            firstName,
-            lastName,
-            email,
-            password,
-            team,
-            key
-        }); 
-        // Handle successful signup
-        console.log('Signup successful:', response.data);
-        // Save the token to local storage or use it as needed
-        // localStorage.setItem('custom-auth-token', response.data.token);
-        return
-    } catch (error:any) {
-        if (error.response) {
-            // Handle errors
-            console.error('Signup failed:', error.response.data.message);
-        } else {
-            console.error('Error:', error.message);
-        }
+  try {
+    const response = await axios.post('http://localhost:5500/api/auth/signup', {
+      firstName,
+      lastName,
+      email,
+      password,
+      team,
+      key,
+    });
+    // Handle successful signup
+    console.log('Signup successful:', response.data);
+    // Save the token to local storage or use it as needed
+    // localStorage.setItem('custom-auth-token', response.data.token);
+    return;
+  } catch (error: any) {
+    if (error.response) {
+      // Handle errors
+      console.error('Signup failed:', error.response.data.message);
+    } else {
+      console.error('Error:', error.message);
     }
+  }
 }
-// Example usage
-
-
-import type { User } from '@/types/user';
 
 function generateToken(): string {
   const arr = new Uint8Array(12);
@@ -76,8 +75,8 @@ export interface SignUpParams {
   lastName: string;
   email: string;
   password: string;
-  key: string,
-  team: string
+  key: string;
+  team: string;
 }
 
 export interface SignInWithOAuthParams {
@@ -96,13 +95,11 @@ export interface ResetPasswordParams {
 class AuthClient {
   async signUp(params: SignUpParams): Promise<{ error?: string }> {
     // Make API request
-   
-
 
     // // We do not handle the API, so we'll just generate a token and store it in localStorage.
     // const token = generateToken();
     // localStorage.setItem('custom-auth-token', token);
-    signup(params.firstName, params.lastName, params.email, params.password, params.team, params.key)
+    signup(params.firstName, params.lastName, params.email, params.password, params.team, params.key);
 
     return {};
   }
@@ -113,9 +110,9 @@ class AuthClient {
 
   async signInWithPassword(params: SignInWithPasswordParams): Promise<{ error?: string }> {
     const { email, password } = params;
-    console.log(email, password)
+    console.log(email, password);
     // Make API request
-    login(email, password)
+    login(email, password);
 
     // const token = generateToken();
     // localStorage.setItem('custom-auth-token', token);

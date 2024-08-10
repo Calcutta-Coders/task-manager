@@ -1,53 +1,71 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const Task = require('../models/Task');
-const Employee = require('../models/Employee');
+const auth = require("../middleware/auth");
+const Task = require("../models/Task");
+const Employee = require("../models/Employee");
 
-// Get all tasks for a specific client
-router.get('/client/:clientId', async (req, res) => {
-    try {
-        const tasks = await Task.find({ client: req.params.clientId }).populate('to from client');
-        res.json(tasks);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+// GET /api/tasks/:clientId
+// Get tasks for a specific client, filtered by employee role
+router.get("/:clientId", auth, async (req, res) => {
+  try {
+    const clientId = req.params.clientId;
+    const employee = await Employee.findById(req.user.id);
+    console.log(employee);
+    if (!employee) {
+      return res.status(404).json({ msg: "Employee not found" });
     }
+
+    let tasks;
+
+    if (employee.role === "analyst") {
+      // For analysts, only fetch tasks assigned to them for the specified client
+      tasks = await Task.find({
+        client: clientId,
+        to: employee._id,
+      })
+        .populate("from", "firstName lastName")
+        .populate("to", "firstName lastName")
+        .populate("client", "name");
+    } else {
+      // For advisors or other roles, fetch all tasks for the specified client
+      tasks = await Task.find({
+        client: clientId,
+      })
+        .populate("from", "firstName lastName")
+        .populate("to", "firstName lastName")
+        .populate("client", "name");
+    }
+
+    res.json(tasks);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
 });
 
-// Create a new task
-router.post('/', async (req, res) => {
-    try {
-        const task = new Task(req.body);
-        await task.save();
-        res.status(201).json(task);
-    } catch (err) {
-        res.status(400).json({ error: err.message });
-    }
-});
+router.post("/", auth, async (req, res) => {
+  try {
+    const { to, client, title, description, status, dueDate } = req.body;
 
-// Update task by ID
-router.put('/:id', async (req, res) => {
-    try {
-        const task = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!task) {
-            return res.status(404).json({ error: 'Task not found' });
-        }
-        res.json(task);
-    } catch (err) {
-        res.status(400).json({ error: err.message });
-    }
-});
+    const newTask = new Task({
+      to: to === "self" ? req.user.id : to, // If 'self' is selected, assign to the current user
+      from: req.user.id,
+      client,
+      title,
+      description,
+      status,
+      dueDate,
+    });
 
-// Delete task by ID
-router.delete('/:id', async (req, res) => {
-    try {
-        const task = await Task.findByIdAndDelete(req.params.id);
-        if (!task) {
-            return res.status(404).json({ error: 'Task not found' });
-        }
-        res.status(204).send();
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+    const savedTask = await newTask.save();
+
+    // Populate the 'to' and 'from' fields with user information
+
+    res.json(savedTask);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
 });
 
 module.exports = router;

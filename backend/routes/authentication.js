@@ -80,7 +80,7 @@ router.post("/signup", async (req, res) => {
       user: {
         id: employee._id,
         email: employee.email,
-        userType: "employee",
+        userType: role,
       },
     };
 

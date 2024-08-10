@@ -9,9 +9,9 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 
 import { config } from '@/config';
-import { CustomersFilters } from '@/components/dashboard/customer/customers-filters';
-import { CustomersTable } from '@/components/dashboard/customer/customers-table';
-import type { Customer } from '@/components/dashboard/customer/customers-table';
+import { CustomersFilters } from '@/components/dashboard/customers/customers-filters';
+import { CustomersTable } from '@/components/dashboard/customers/customers-table';
+import type { Customer } from '@/components/dashboard/customers/customers-table';
 import AddClientModal from '@/components/dashboard/modals/addClient';
 
 const Page = () => {

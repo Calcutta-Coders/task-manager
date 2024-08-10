@@ -3,7 +3,8 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const authRoutes = require("./routes/authentication"); // Adjust the path as per your project structure
 const clientRoutes = require("./routes/clients");
-
+const taskRoutes = require("./routes/tasks");
+const employeeRoutes = require("./routes/employees");
 // Setup express app
 const app = express();
 
@@ -26,7 +27,8 @@ app.use(allowCrossDomain);
 // Routes
 app.use("/api/auth", authRoutes); // Authentication routes
 app.use("/api/clients", clientRoutes);
-
+app.use("/api/tasks", taskRoutes);
+app.use("/api/employees", employeeRoutes);
 app.use(bodyParser.json());
 
 // Configure Mongo
