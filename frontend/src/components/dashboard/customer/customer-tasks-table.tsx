@@ -1,21 +1,32 @@
 'use client';
 
 import * as React from 'react';
+import { redirect, useRouter } from 'next/navigation';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  FormControl,
+  Input,
+  InputLabel,
+  MenuItem,
+  Modal,
+  Select,
+  TextField,
+  Typography,
+} from '@mui/material';
 import Card from '@mui/material/Card';
+import { red } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import axios from 'axios';
-import jwt_decode from 'jwt-decode';
 
 export interface Task {
   _id: string;
@@ -26,12 +37,7 @@ export interface Task {
   description: string;
   status: 'To do' | 'Pending' | 'Completed';
   dueDate: string;
-}
-
-interface DecodedToken {
-  user: {
-    id: string;
-  };
+  attachments?: Array<{ filename: string; path: string; mimetype: string; size: number; uploadDate: string }>;
 }
 
 interface CustomerTasksTableProps {
@@ -39,41 +45,138 @@ interface CustomerTasksTableProps {
 }
 
 const axiosInstance = axios.create({
-  baseURL: 'http://127.0.0.1:5500/api', // Adjust this if your API has a different base URL
-  headers: {
-    'x-auth-token': `${localStorage.getItem('custom-auth-token')}`, // Assuming you store the token in localStorage
-  },
+  baseURL: 'http://127.0.0.1:5500/api',
 });
+
+interface EditTaskModalProps {
+  open: boolean;
+  onClose: () => void;
+  onSave: (updatedTask: Partial<Task>) => void;
+  task: Task | null;
+  onFileUpload: (files: File[]) => void;
+}
+
+function EditTaskModal({ open, onClose, onSave, task, onFileUpload }: EditTaskModalProps) {
+  const [editedTask, setEditedTask] = React.useState<Partial<Task>>({});
+  const router = useRouter();
+  React.useEffect(() => {
+    if (task) {
+      setEditedTask(task);
+    }
+  }, [task]);
+
+  const handleSave = () => {
+    onSave(editedTask);
+    onClose();
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      onFileUpload(Array.from(event.target.files));
+    }
+  };
+
+  if (!task) return null;
+
+  return (
+    <Modal open={open} onClose={onClose}>
+      <Box
+        sx={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: 400,
+          bgcolor: 'background.paper',
+          border: '2px solid #000',
+          boxShadow: 24,
+          p: 4,
+        }}
+      >
+        <Typography variant="h6" component="h2" gutterBottom>
+          Edit Task
+        </Typography>
+        <TextField
+          label="Title"
+          value={editedTask.title || ''}
+          onChange={(e) => setEditedTask({ ...editedTask, title: e.target.value })}
+          fullWidth
+          margin="normal"
+        />
+        <TextField
+          label="Description"
+          value={editedTask.description || ''}
+          onChange={(e) => setEditedTask({ ...editedTask, description: e.target.value })}
+          fullWidth
+          multiline
+          rows={3}
+          margin="normal"
+        />
+        <FormControl fullWidth margin="normal">
+          <InputLabel>Status</InputLabel>
+          <Select
+            value={editedTask.status || ''}
+            onChange={(e) => setEditedTask({ ...editedTask, status: e.target.value as Task['status'] })}
+          >
+            <MenuItem value="To do">To do</MenuItem>
+            <MenuItem value="Pending">Pending</MenuItem>
+            <MenuItem value="Completed">Completed</MenuItem>
+          </Select>
+        </FormControl>
+        <TextField
+          label="Due Date"
+          type="date"
+          value={editedTask.dueDate ? editedTask.dueDate.split('T')[0] : ''}
+          onChange={(e) => setEditedTask({ ...editedTask, dueDate: e.target.value })}
+          fullWidth
+          margin="normal"
+          InputLabelProps={{
+            shrink: true,
+          }}
+        />
+        <Input type="file" inputProps={{ multiple: true }} onChange={handleFileUpload} />
+        <Button onClick={handleSave} variant="contained" sx={{ mt: 2 }}>
+          Save Changes
+        </Button>
+      </Box>
+    </Modal>
+  );
+}
+
 export function CustomerTasksTable({ clientId }: CustomerTasksTableProps): React.JSX.Element {
   const [tasks, setTasks] = React.useState<Task[]>([]);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [selectedTaskId, setSelectedTaskId] = React.useState<string | null>(null);
   const [sortConfig, setSortConfig] = React.useState<{ key: keyof Task; direction: 'asc' | 'desc' } | null>(null);
+  const [editModalOpen, setEditModalOpen] = React.useState(false);
+  const [taskToEdit, setTaskToEdit] = React.useState<Task | null>(null);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     const fetchTasks = async () => {
+      setLoading(true);
+      setError(null);
       try {
+        console.log('Fetching tasks for client:', clientId);
         const token = localStorage.getItem('custom-auth-token');
         if (!token) {
           throw new Error('No auth token found');
         }
 
-        const body = {
+        const response = await axiosInstance.get<Task[]>(`/tasks/${clientId}`, {
           headers: {
             'x-auth-token': token,
           },
         });
-        const response = await axiosInstance.get<any>(`/tasks/${clientId}`, body);
-        if (!response.ok) {
-          throw new Error('Failed to fetch tasks');
-        }
 
-        const fetchedTasks: any = await response.json();
-        console.log(fetchedTasks);
-        setTasks(fetchedTasks);
+        console.log('Fetched tasks:', response.data);
+        setTasks(response.data);
       } catch (error) {
         console.error('Error fetching tasks:', error);
-        // Handle error (e.g., show error message to user)
+        setError('Failed to fetch tasks. Please try again later.');
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -90,27 +193,113 @@ export function CustomerTasksTable({ clientId }: CustomerTasksTableProps): React
     setSelectedTaskId(null);
   };
 
-  const handleMenuAction = (action: string) => {
+  const handleMenuAction = async (action: string) => {
     if (selectedTaskId) {
-      let updatedTasks = [...tasks];
-      const taskIndex = updatedTasks.findIndex((task) => task._id === selectedTaskId);
-
-      if (taskIndex !== -1) {
-        if (action === 'edit') {
-          // Implement edit functionality
-          console.log(`Editing task ${selectedTaskId}`);
-        } else if (action === 'delete') {
-          updatedTasks.splice(taskIndex, 1);
-        } else if (action === 'complete') {
-          updatedTasks[taskIndex].status = 'Completed';
-        } else if (action === 'pending') {
-          updatedTasks[taskIndex].status = 'Pending';
+      try {
+        const token = localStorage.getItem('custom-auth-token');
+        if (!token) {
+          throw new Error('No auth token found');
         }
 
-        setTasks(updatedTasks);
+        const headers = { 'x-auth-token': token };
+
+        let updatedTask;
+        switch (action) {
+          case 'edit':
+            const taskToEdit = tasks.find((task) => task._id === selectedTaskId);
+            if (taskToEdit) {
+              setTaskToEdit(taskToEdit);
+              setEditModalOpen(true);
+            }
+            break;
+          case 'delete':
+            await axiosInstance.delete(`/tasks/${selectedTaskId}`, { headers });
+            setTasks(tasks.filter((task) => task._id !== selectedTaskId));
+            break;
+          case 'complete':
+            updatedTask = await axiosInstance.put(
+              `/tasks/${selectedTaskId}/status`,
+              { status: 'Completed' },
+              { headers }
+            );
+            updateTaskInState(updatedTask.data);
+            break;
+          case 'pending':
+            updatedTask = await axiosInstance.put(
+              `/tasks/${selectedTaskId}/status`,
+              { status: 'Pending' },
+              { headers }
+            );
+            updateTaskInState(updatedTask.data);
+            break;
+        }
+      } catch (error) {
+        console.error('Error updating task:', error);
+        setError('Failed to update task. Please try again.');
       }
     }
     handleMenuClose();
+  };
+
+  const handleSaveEditedTask = async (updatedTask: Partial<Task>) => {
+    try {
+      const token = localStorage.getItem('custom-auth-token');
+      if (!token) {
+        throw new Error('No auth token found');
+      }
+      console.log('part 1');
+      // Update the task on the server
+      const response = await axiosInstance.put(`/tasks/${updatedTask._id}`, updatedTask, {
+        headers: {
+          'x-auth-token': token,
+        },
+      });
+      console.log('part 2');
+      // Update the task in the local state
+      setTasks((prevTasks) =>
+        prevTasks.map((task) => (task._id === updatedTask._id ? { ...task, ...response.data } : task))
+      );
+      setEditModalOpen(false);
+      console.log('here');
+    } catch (error) {
+      console.error('Error updating task:', error);
+      setError('Failed to update task. Please try again.');
+    }
+  };
+
+  const handleFileUpload = async (files: File[]) => {
+    try {
+      const token = localStorage.getItem('custom-auth-token');
+      if (!token) {
+        throw new Error('No auth token found');
+      }
+
+      const formData = new FormData();
+      files.forEach((file) => {
+        formData.append('files', file);
+      });
+
+      const response = await axiosInstance.post(`/tasks/${selectedTaskId}/upload`, formData, {
+        headers: {
+          'x-auth-token': token,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      // Update the task in the local state with the new files
+      setTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          task._id === selectedTaskId ? { ...task, files: [...(task.files || []), ...response.data.files] } : task
+        )
+      );
+    } catch (error) {
+      console.error('Error uploading files:', error);
+      setError('Failed to upload files. Please try again.');
+    }
+  };
+
+  const updateTaskInState = (updatedTask: Task) => {
+    setTasks(tasks.map((task) => (task._id === updatedTask._id ? updatedTask : task)));
   };
 
   const handleSort = (key: keyof Task) => {
@@ -158,6 +347,14 @@ export function CustomerTasksTable({ clientId }: CustomerTasksTableProps): React
     return differenceInDays <= 5 && differenceInDays >= 0;
   };
 
+  if (loading) {
+    return <Typography>Loading tasks...</Typography>;
+  }
+
+  if (error) {
+    return <Typography color="error">{error}</Typography>;
+  }
+
   return (
     <Card>
       <Table>
@@ -181,6 +378,7 @@ export function CustomerTasksTable({ clientId }: CustomerTasksTableProps): React
               {sortConfig?.key === 'status' &&
                 (sortConfig.direction === 'asc' ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />)}
             </TableCell>
+            <TableCell>Files</TableCell>
             <TableCell>Actions</TableCell>
           </TableRow>
         </TableHead>
@@ -193,11 +391,22 @@ export function CustomerTasksTable({ clientId }: CustomerTasksTableProps): React
               <TableCell>{task.description}</TableCell>
               <TableCell>
                 <Typography style={{ color: isDateWithin5Days(task.dueDate) ? 'red' : 'inherit' }}>
-                  {task.dueDate}
+                  {new Date(task.dueDate).toLocaleDateString()}
                 </Typography>
               </TableCell>
               <TableCell>
                 <Typography style={{ color: getStatusColor(task.status) }}>{task.status}</Typography>
+              </TableCell>
+              <TableCell>
+                {task.attachments && task.attachments.length > 0 ? (
+                  <ul>
+                    {task.attachments.map((file, index) => (
+                      <li key={index}>{file.filename}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  'No files'
+                )}
               </TableCell>
               <TableCell>
                 <IconButton onClick={(event) => handleMenuOpen(event, task._id)}>
@@ -214,6 +423,13 @@ export function CustomerTasksTable({ clientId }: CustomerTasksTableProps): React
         <MenuItem onClick={() => handleMenuAction('complete')}>Mark as Complete</MenuItem>
         <MenuItem onClick={() => handleMenuAction('pending')}>Mark as Pending</MenuItem>
       </Menu>
+      <EditTaskModal
+        open={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
+        onSave={handleSaveEditedTask}
+        task={taskToEdit}
+        onFileUpload={handleFileUpload}
+      />
     </Card>
   );
 }

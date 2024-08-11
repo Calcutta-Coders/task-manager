@@ -34,6 +34,18 @@ const taskSchema = new Schema({
     type: Date,
     required: true,
   },
+  attachments: [
+    {
+      filename: String,
+      path: String,
+      mimetype: String,
+      size: Number,
+      uploadDate: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  ],
   createdAt: {
     type: Date,
     default: Date.now,

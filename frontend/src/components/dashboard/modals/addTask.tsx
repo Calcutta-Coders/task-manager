@@ -1,9 +1,11 @@
 import * as React from 'react';
+import { Token } from '@mui/icons-material';
 import {
   Box,
   Button,
   CircularProgress,
   FormControl,
+  Input,
   InputLabel,
   MenuItem,
   Modal,
@@ -23,6 +25,7 @@ interface Task {
   description: string;
   status: 'To do' | 'Pending' | 'Completed';
   dueDate: string;
+  files?: Array<{ filename: string; path: string; mimetype: string; size: number; uploadDate: string }>;
 }
 
 interface Employee {
@@ -51,12 +54,13 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ open, onClose, onAddTask, c
     status: 'To do',
     dueDate: '',
   });
+  const [files, setFiles] = React.useState<File[]>([]);
 
   // Create an Axios instance with default headers
   const axiosInstance = axios.create({
     baseURL: 'http://127.0.0.1:5500/api', // Adjust this if your API has a different base URL
     headers: {
-      'x-auth-token': `${localStorage.getItem('custom-auth-token')}`, // Assuming you store the token in localStorage
+      'x-auth-token': `${localStorage.getItem('custom-auth-token')}`,
     },
   });
 
@@ -78,14 +82,37 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ open, onClose, onAddTask, c
     setLoading(true);
     setError('');
     try {
-      const response = await axiosInstance.post<Task>('/tasks', newTask);
+      const formData = new FormData();
+      Object.entries(newTask).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+      console.log(files);
+      files.forEach((file) => {
+        formData.append('files', file);
+      });
+
+      const response = await axiosInstance.post<Task>('/tasks', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log('Task added successfully:', response.data);
       onAddTask(response.data);
       onClose();
     } catch (error) {
       console.error('Error adding task:', error);
+      if (axios.isAxiosError(error)) {
+        console.error('Axios error details:', error.response?.data);
+      }
       setError('An error occurred while adding the task. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      setFiles(Array.from(event.target.files));
     }
   };
 
@@ -159,6 +186,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ open, onClose, onAddTask, c
               shrink: true,
             }}
           />
+          <Input type="file" inputProps={{ multiple: true }} onChange={handleFileChange} />
           <Button variant="contained" onClick={handleAddTask} disabled={loading}>
             {loading ? <CircularProgress size={24} /> : 'Add Task'}
           </Button>
