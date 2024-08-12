@@ -1,4 +1,6 @@
 import * as React from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -16,9 +18,9 @@ import { ArrowRight as ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/Arr
 import dayjs from 'dayjs';
 
 const statusMap = {
-  pending: { label: 'Pending', color: 'warning' },
-  delivered: { label: 'Delivered', color: 'success' },
-  refunded: { label: 'Refunded', color: 'error' },
+  Pending: { label: 'Pending', color: 'warning' },
+  // delivered: { label: 'Complete', color: 'success' },
+  'To do': { label: 'To do', color: 'error' },
 } as const;
 
 export interface Order {
@@ -35,16 +37,17 @@ export interface LatestOrdersProps {
 }
 
 export function LatestOrders({ orders = [], sx }: LatestOrdersProps): React.JSX.Element {
+  const router = useRouter();
   return (
     <Card sx={sx}>
-      <CardHeader title="Latest orders" />
+      <CardHeader title="My pending tasks" />
       <Divider />
       <Box sx={{ overflowX: 'auto' }}>
         <Table sx={{ minWidth: 800 }}>
           <TableHead>
             <TableRow>
-              <TableCell>Order</TableCell>
-              <TableCell>Customer</TableCell>
+              <TableCell>Client</TableCell>
+              <TableCell>Task</TableCell>
               <TableCell sortDirection="desc">Date</TableCell>
               <TableCell>Status</TableCell>
             </TableRow>
@@ -54,10 +57,16 @@ export function LatestOrders({ orders = [], sx }: LatestOrdersProps): React.JSX.
               const { label, color } = statusMap[order.status] ?? { label: 'Unknown', color: 'default' };
 
               return (
-                <TableRow hover key={order.id}>
-                  <TableCell>{order.id}</TableCell>
-                  <TableCell>{order.customer.name}</TableCell>
-                  <TableCell>{dayjs(order.createdAt).format('MMM D, YYYY')}</TableCell>
+                <TableRow
+                  hover
+                  key={order._id}
+                  onClick={() => {
+                    router.replace(`/dashboard/customer/${order.client._id}`);
+                  }}
+                >
+                  <TableCell>{order.client.name}</TableCell>
+                  <TableCell>{order.description}</TableCell>
+                  <TableCell>{dayjs(order.dueDate).format('YYYY-MM-DD')}</TableCell>
                   <TableCell>
                     <Chip color={color} label={label} size="small" />
                   </TableCell>
@@ -68,7 +77,7 @@ export function LatestOrders({ orders = [], sx }: LatestOrdersProps): React.JSX.
         </Table>
       </Box>
       <Divider />
-      <CardActions sx={{ justifyContent: 'flex-end' }}>
+      {/* <CardActions sx={{ justifyContent: 'flex-end' }}>
         <Button
           color="inherit"
           endIcon={<ArrowRightIcon fontSize="var(--icon-fontSize-md)" />}
@@ -77,7 +86,7 @@ export function LatestOrders({ orders = [], sx }: LatestOrdersProps): React.JSX.
         >
           View all
         </Button>
-      </CardActions>
+      </CardActions> */}
     </Card>
   );
 }

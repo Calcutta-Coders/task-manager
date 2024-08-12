@@ -84,7 +84,7 @@ router.post("/signup", async (req, res) => {
       },
     };
 
-    jwt.sign(payload, "jwtSecret", { expiresIn: "1h" }, (err, token) => {
+    jwt.sign(payload, "jwtSecret", (err, token) => {
       if (err) throw err;
       res.json({ token });
     });

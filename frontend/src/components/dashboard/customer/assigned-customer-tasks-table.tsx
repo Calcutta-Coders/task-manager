@@ -251,7 +251,7 @@ function EditTaskModal({ open, onClose, onSave, task, onFileUpload }: EditTaskMo
   );
 }
 
-export function CustomerTasksTable({ clientId }: CustomerTasksTableProps): React.JSX.Element {
+export function AssignedCustomerTasksTable({ clientId }: CustomerTasksTableProps): React.JSX.Element {
   const [tasks, setTasks] = React.useState<Task[]>([]);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [selectedTaskId, setSelectedTaskId] = React.useState<string | null>(null);
@@ -280,7 +280,7 @@ export function CustomerTasksTable({ clientId }: CustomerTasksTableProps): React
           throw new Error('No auth token found');
         }
 
-        const response = await axiosInstance.get<Task[]>(`/tasks/${clientId}`, {
+        const response = await axiosInstance.get<Task[]>(`/tasks/from/${clientId}`, {
           headers: {
             'x-auth-token': token,
           },

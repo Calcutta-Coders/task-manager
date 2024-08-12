@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useRouter } from 'next/navigation';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -54,7 +55,11 @@ export function CustomersTable({
 
   const selectedSome = (selected?.size ?? 0) > 0 && (selected?.size ?? 0) < rows.length;
   const selectedAll = rows.length > 0 && selected?.size === rows.length;
+  const router = useRouter();
 
+  const handleRowClick = (customerId: string) => {
+    router.push(`customer/${customerId}`);
+  };
   return (
     <Card>
       <Box sx={{ overflowX: 'auto' }}>
@@ -84,17 +89,17 @@ export function CustomersTable({
           <TableBody>
             {rows.map((row) => {
               const isSelected = selected?.has(row.id);
-
+              console.log(row);
               return (
-                <TableRow hover key={row.id} selected={isSelected}>
+                <TableRow hover key={row._id} selected={isSelected} onClick={() => handleRowClick(row._id)}>
                   <TableCell padding="checkbox">
                     <Checkbox
                       checked={isSelected}
                       onChange={(event) => {
                         if (event.target.checked) {
-                          selectOne(row.id);
+                          selectOne(row._id);
                         } else {
-                          deselectOne(row.id);
+                          deselectOne(row._id);
                         }
                       }}
                     />

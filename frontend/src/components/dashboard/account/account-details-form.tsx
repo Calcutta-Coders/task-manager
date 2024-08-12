@@ -1,87 +1,79 @@
 'use client';
 
 import * as React from 'react';
-import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
 import OutlinedInput from '@mui/material/OutlinedInput';
-import Select from '@mui/material/Select';
 import Grid from '@mui/material/Unstable_Grid2';
-
-const states = [
-  { value: 'alabama', label: 'Alabama' },
-  { value: 'new-york', label: 'New York' },
-  { value: 'san-francisco', label: 'San Francisco' },
-  { value: 'los-angeles', label: 'Los Angeles' },
-] as const;
+import axios from 'axios';
 
 export function AccountDetailsForm(): React.JSX.Element {
-  return (
-    <form
-      onSubmit={(event) => {
-        event.preventDefault();
-      }}
-    >
+  const [employee, setEmployee] = React.useState(null);
+
+  React.useEffect(() => {
+    const fetchEmployee = async () => {
+      try {
+        const token = localStorage.getItem('custom-auth-token');
+        const response = await axios.get('http://127.0.0.1:5500/api/employees', {
+          headers: {
+            'x-auth-token': token,
+          },
+        });
+        if (response.data && response.data.length > 0) {
+          setEmployee(response.data[0]); // Assuming we want to display the first employee
+        }
+      } catch (error) {
+        console.error('Error fetching employee data:', error);
+      }
+    };
+
+    fetchEmployee();
+  }, []);
+
+  if (!employee) {
+    return (
       <Card>
-        <CardHeader subheader="The information can be edited" title="Profile" />
-        <Divider />
-        <CardContent>
-          <Grid container spacing={3}>
-            <Grid md={6} xs={12}>
-              <FormControl fullWidth required>
-                <InputLabel>First name</InputLabel>
-                <OutlinedInput defaultValue="Sofia" label="First name" name="firstName" />
-              </FormControl>
-            </Grid>
-            <Grid md={6} xs={12}>
-              <FormControl fullWidth required>
-                <InputLabel>Last name</InputLabel>
-                <OutlinedInput defaultValue="Rivers" label="Last name" name="lastName" />
-              </FormControl>
-            </Grid>
-            <Grid md={6} xs={12}>
-              <FormControl fullWidth required>
-                <InputLabel>Email address</InputLabel>
-                <OutlinedInput defaultValue="sofia@devias.io" label="Email address" name="email" />
-              </FormControl>
-            </Grid>
-            <Grid md={6} xs={12}>
-              <FormControl fullWidth>
-                <InputLabel>Phone number</InputLabel>
-                <OutlinedInput label="Phone number" name="phone" type="tel" />
-              </FormControl>
-            </Grid>
-            <Grid md={6} xs={12}>
-              <FormControl fullWidth>
-                <InputLabel>State</InputLabel>
-                <Select defaultValue="New York" label="State" name="state" variant="outlined">
-                  {states.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid md={6} xs={12}>
-              <FormControl fullWidth>
-                <InputLabel>City</InputLabel>
-                <OutlinedInput label="City" />
-              </FormControl>
-            </Grid>
-          </Grid>
-        </CardContent>
-        <Divider />
-        <CardActions sx={{ justifyContent: 'flex-end' }}>
-          <Button variant="contained">Save details</Button>
-        </CardActions>
+        <CardContent>Loading...</CardContent>
       </Card>
-    </form>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader subheader="Employee information" title="Profile" />
+      <Divider />
+      <CardContent>
+        <Grid container spacing={3}>
+          <Grid md={6} xs={12}>
+            <FormControl fullWidth>
+              <InputLabel>First name</InputLabel>
+              <OutlinedInput value={employee.firstName} label="First name" name="firstName" readOnly />
+            </FormControl>
+          </Grid>
+          <Grid md={6} xs={12}>
+            <FormControl fullWidth>
+              <InputLabel>Last name</InputLabel>
+              <OutlinedInput value={employee.lastName} label="Last name" name="lastName" readOnly />
+            </FormControl>
+          </Grid>
+          <Grid md={6} xs={12}>
+            <FormControl fullWidth>
+              <InputLabel>Role</InputLabel>
+              <OutlinedInput value={employee.role} label="Role" name="role" readOnly />
+            </FormControl>
+          </Grid>
+          <Grid md={6} xs={12}>
+            <FormControl fullWidth>
+              <InputLabel>Email</InputLabel>
+              <OutlinedInput value={employee.email} label="Email" name="email" readOnly />
+            </FormControl>
+          </Grid>
+        </Grid>
+      </CardContent>
+    </Card>
   );
 }

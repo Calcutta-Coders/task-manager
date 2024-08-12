@@ -76,9 +76,7 @@ export function MobileNav({ open, onClose }: MobileNavProps): React.JSX.Element 
             <Typography color="var(--mui-palette-neutral-400)" variant="body2">
               Workspace
             </Typography>
-            <Typography color="inherit" variant="subtitle1">
-              Devias
-            </Typography>
+            <Typography color="inherit" variant="subtitle1"></Typography>
           </Box>
           <CaretUpDownIcon />
         </Box>
@@ -88,7 +86,7 @@ export function MobileNav({ open, onClose }: MobileNavProps): React.JSX.Element 
         {renderNavItems({ pathname, items: navItems })}
       </Box>
       <Divider sx={{ borderColor: 'var(--mui-palette-neutral-700)' }} />
-      <Stack spacing={2} sx={{ p: '12px' }}>
+      {/* <Stack spacing={2} sx={{ p: '12px' }}>
         <div>
           <Typography color="var(--mui-palette-neutral-100)" variant="subtitle2">
             Need more features?
@@ -116,7 +114,7 @@ export function MobileNav({ open, onClose }: MobileNavProps): React.JSX.Element 
         >
           Pro version
         </Button>
-      </Stack>
+      </Stack> */}
     </Drawer>
   );
 }

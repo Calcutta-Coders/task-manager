@@ -7,8 +7,20 @@ const Employee = require("../models/Employee");
 // Get all employees
 router.get("/", auth, async (req, res) => {
   try {
-    const employees = await Employee.find().select("firstName lastName role");
+    const employees = await Employee.find().select(
+      "firstName lastName role email team"
+    );
     res.json(employees);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+});
+
+router.get("/count", auth, async (req, res) => {
+  try {
+    const employees = await Employee.findById(req.user.id);
+    res.json(employees.clients.length);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");

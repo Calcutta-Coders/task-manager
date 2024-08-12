@@ -157,4 +157,58 @@ router.post("/add-to-employee", auth, async (req, res) => {
   }
 });
 
+// @route   GET /api/clients/:clientId
+// @desc    Get a client by clientId
+// @access  Private (requires authentication)
+router.get("/:clientId", auth, async (req, res) => {
+  try {
+    const client = await Client.findById(req.params.clientId)
+      .populate({
+        path: "tasks",
+        match: { status: "pending" },
+        select: "status",
+      })
+      .select("_id name email company phone");
+
+    if (!client) {
+      return res.status(404).json({ message: "Client not found" });
+    }
+    console.log(client);
+    const result = {
+      _id: client._id,
+      name: client.name,
+      email: client.email,
+      company: client.company,
+      phone: client.phone,
+      pendingTasksCount: client.tasks.length,
+    };
+
+    res.json(result);
+  } catch (err) {
+    console.error(err);
+    if (err.kind === "ObjectId") {
+      return res.status(400).json({ message: "Invalid client ID" });
+    }
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+// @route   GET /api/clients/count
+// @desc    Get total number of clients
+// @access  Private (requires authentication)
+router.get("/count", auth, async (req, res) => {
+  try {
+    const clients = await Task.find({
+      client: clientId,
+      to: employeeId,
+      status: { $in: ["Pending", "To do"] },
+    });
+
+    res.json({ clients: clients.length });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
 module.exports = router;

@@ -1,47 +1,64 @@
+'use client';
+
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-
-const user = {
-  name: 'Sofia Rivers',
-  avatar: '/assets/avatar.png',
-  jobTitle: 'Senior Developer',
-  country: 'USA',
-  city: 'Los Angeles',
-  timezone: 'GTM-7',
-} as const;
+import axios from 'axios';
 
 export function AccountInfo(): React.JSX.Element {
+  const [employee, setEmployee] = React.useState(null);
+
+  React.useEffect(() => {
+    const fetchEmployee = async () => {
+      try {
+        const token = localStorage.getItem('custom-auth-token');
+        const response = await axios.get('http://127.0.0.1:5500/api/employees', {
+          headers: {
+            'x-auth-token': token,
+          },
+        });
+        if (response.data && response.data.length > 0) {
+          setEmployee(response.data[0]); // Assuming we want to display the first employee
+        }
+      } catch (error) {
+        console.error('Error fetching employee data:', error);
+      }
+    };
+
+    fetchEmployee();
+  }, []);
+
+  if (!employee) {
+    return (
+      <Card>
+        <CardContent>Loading...</CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardContent>
         <Stack spacing={2} sx={{ alignItems: 'center' }}>
           <div>
-            <Avatar src={user.avatar} sx={{ height: '80px', width: '80px' }} />
+            <Avatar
+              src={`https://api.dicebear.com/9.x/initials/svg?seed=${employee.firstName + ' ' + employee.lastName}`}
+              sx={{ height: '80px', width: '80px' }}
+            />
           </div>
           <Stack spacing={1} sx={{ textAlign: 'center' }}>
-            <Typography variant="h5">{user.name}</Typography>
+            <Typography variant="h5">{`${employee.firstName} ${employee.lastName}`}</Typography>
             <Typography color="text.secondary" variant="body2">
-              {user.city} {user.country}
-            </Typography>
-            <Typography color="text.secondary" variant="body2">
-              {user.timezone}
+              {employee.role}
             </Typography>
           </Stack>
         </Stack>
       </CardContent>
       <Divider />
-      <CardActions>
-        <Button fullWidth variant="text">
-          Upload picture
-        </Button>
-      </CardActions>
     </Card>
   );
 }
