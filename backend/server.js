@@ -44,5 +44,5 @@ mongoose
   .catch((err) => console.log(err));
 
 // Specify the Port where the backend server can be accessed and start listening on that port
-const port = process.env.PORT || 5100;
+const port = process.env.PORT || 5500;
 app.listen(port, () => console.log(`Server up and running on port ${port}.`));
