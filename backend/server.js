@@ -25,10 +25,10 @@ app.use(express.json()); // Body parser middleware
 app.use(allowCrossDomain);
 
 // Routes
-app.use("/api/auth", authRoutes); // Authentication routes
-app.use("/api/clients", clientRoutes);
-app.use("/api/tasks", taskRoutes);
-app.use("/api/employees", employeeRoutes);
+app.use("/auth", authRoutes); // Authentication routes
+app.use("/clients", clientRoutes);
+app.use("/tasks", taskRoutes);
+app.use("/employees", employeeRoutes);
 app.use(bodyParser.json());
 
 // Configure Mongo

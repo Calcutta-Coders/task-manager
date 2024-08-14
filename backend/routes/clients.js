@@ -195,20 +195,5 @@ router.get("/:clientId", auth, async (req, res) => {
 
 // @route   GET /api/clients/count
 // @desc    Get total number of clients
-// @access  Private (requires authentication)
-router.get("/count", auth, async (req, res) => {
-  try {
-    const clients = await Task.find({
-      client: clientId,
-      to: employeeId,
-      status: { $in: ["Pending", "To do"] },
-    });
-
-    res.json({ clients: clients.length });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server Error" });
-  }
-});
 
 module.exports = router;
