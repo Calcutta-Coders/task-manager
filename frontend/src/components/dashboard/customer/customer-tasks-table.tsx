@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { redirect, useRouter } from 'next/navigation';
+import { API_URL } from '@/constants';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -50,7 +51,7 @@ interface CustomerTasksTableProps {
 }
 
 const axiosInstance = axios.create({
-  baseURL: 'http://127.0.0.1:5500/api',
+  baseURL: `${API_URL}/api`,
 });
 
 interface EditTaskModalProps {
@@ -283,6 +284,7 @@ export function CustomerTasksTable({ clientId }: CustomerTasksTableProps): React
         const response = await axiosInstance.get<Task[]>(`/tasks/${clientId}`, {
           headers: {
             'x-auth-token': token,
+            filter: 'false',
           },
         });
 

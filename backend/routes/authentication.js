@@ -36,7 +36,7 @@ router.post("/login", async (req, res) => {
       },
     };
 
-    jwt.sign(payload, "jwtSecret", { expiresIn: "1h" }, (err, token) => {
+    jwt.sign(payload, "jwtSecret", (err, token) => {
       if (err) throw err;
       console.log("JWT token generated successfully");
       res.json({ token });
@@ -62,7 +62,6 @@ router.post("/signup", async (req, res) => {
     if (key === "happy") role = "advisor";
     password = password.trim();
     // Hash password
-
     employee = new Employee({
       firstName,
       lastName,

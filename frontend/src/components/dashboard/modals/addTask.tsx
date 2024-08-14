@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { API_URL } from '@/constants';
 import { Token } from '@mui/icons-material';
 import {
   Box,
@@ -58,7 +59,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ open, onClose, onAddTask, c
 
   // Create an Axios instance with default headers
   const axiosInstance = axios.create({
-    baseURL: 'http://127.0.0.1:5500/api', // Adjust this if your API has a different base URL
+    baseURL: `${API_URL}/api`, // Adjust this if your API has a different base URL
     headers: {
       'x-auth-token': `${localStorage.getItem('custom-auth-token')}`,
     },

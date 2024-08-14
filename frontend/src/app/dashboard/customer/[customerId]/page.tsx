@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { useParams } from 'next/navigation';
+import { API_URL } from '@/constants';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import BusinessIcon from '@mui/icons-material/Business';
 import EmailIcon from '@mui/icons-material/Email';
@@ -10,6 +11,7 @@ import PhoneIcon from '@mui/icons-material/Phone';
 import { Button, Card, CardContent, Divider, Grid, Stack, Typography } from '@mui/material';
 import axios from 'axios';
 
+import { AllTasks } from '@/components/dashboard/customer/all-tasks';
 import { AssignedCustomerTasksTable } from '@/components/dashboard/customer/assigned-customer-tasks-table';
 import { CustomerFilters } from '@/components/dashboard/customer/customer-filters';
 import { CustomerTasksTable, Task } from '@/components/dashboard/customer/customer-tasks-table';
@@ -31,7 +33,8 @@ const Page = () => {
   const [tasks, setTasks] = React.useState<Task[]>([]);
   const [clientDetails, setClientDetails] = React.useState<ClientDetails | null>(null);
   const [isAddTaskModalOpen, setIsAddTaskModalOpen] = React.useState(false);
-
+  const [role, setRole] = React.useState('analyst');
+  console.log(API_URL);
   React.useEffect(() => {
     const fetchClientDetails = async () => {
       try {
@@ -40,13 +43,19 @@ const Page = () => {
           throw new Error('No auth token found');
         }
 
-        const response = await axios.get<ClientDetails>(`http://127.0.0.1:5500/api/clients/${customerId}`, {
+        const response = await axios.get<ClientDetails>(`${API_URL}/api/clients/${customerId}`, {
           headers: {
             'x-auth-token': token,
           },
         });
-
-        const response2 = await axios.get(`http://127.0.0.1:5500/api/tasks/pending/${customerId}`, {
+        const role = await axios.get(`${API_URL}/api/employees/me`, {
+          headers: {
+            'x-auth-token': token,
+          },
+        });
+        console.log(role.data);
+        setRole(role.data.role);
+        const response2 = await axios.get(`${API_URL}/api/tasks/pending/${customerId}`, {
           headers: {
             'x-auth-token': token,
           },
@@ -106,7 +115,6 @@ const Page = () => {
           Add Task
         </Button>
       </Stack>
-
       {clientDetails && (
         <Card elevation={3}>
           <CardContent>
@@ -145,17 +153,25 @@ const Page = () => {
           </CardContent>
         </Card>
       )}
-
       <Typography variant="h5">Tasks</Typography>
-      <CustomerFilters />
+      {/* <CustomerFilters /> */}
+      <Typography variant="h6">Assigned to Me</Typography>
       <CustomerTasksTable clientId={customerId} tasks={tasks} clientDetails={clientDetails} />
+      <Typography variant="h6">Assigned by Me</Typography>
       <AssignedCustomerTasksTable clientId={customerId} tasks={tasks} clientDetails={clientDetails} />
+      {role === 'advisor' && (
+        <>
+          <Typography variant="h6">All Tasks</Typography>
+          <AllTasks clientId={customerId} tasks={tasks} clientDetails={clientDetails} />
+        </>
+      )}
       <AddTaskModal
         open={isAddTaskModalOpen}
         onClose={() => setIsAddTaskModalOpen(false)}
         onAddTask={handleAddTask}
         clientId={customerId}
       />
+      {/* {''} */}
     </Stack>
   );
 };

@@ -48,9 +48,10 @@ const upload = multer({ storage: storage });
 
 // GET /api/tasks/:clientId
 // Get tasks for a specific client, filtered by employee role
-router.get("/:clientId", auth, async (req, res) => {
+router.get("/:clientId/", auth, async (req, res) => {
   try {
     const clientId = req.params.clientId;
+    const filter = req.headers.filter;
     const employee = await Employee.findById(req.user.id);
 
     if (!employee) {
@@ -59,9 +60,9 @@ router.get("/:clientId", auth, async (req, res) => {
 
     let tasks;
     const taskQuery =
-      employee.role === "analyst"
-        ? { client: clientId, to: employee._id }
-        : { client: clientId };
+      employee.role === "advisor" && filter == "true"
+        ? { client: clientId }
+        : { client: clientId, to: employee._id };
 
     tasks = await Task.find(taskQuery)
       .populate("from", "firstName lastName")

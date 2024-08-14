@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { API_URL } from '@/constants';
 import { Button, Stack, Typography } from '@mui/material';
 import { Download as DownloadIcon } from '@phosphor-icons/react/dist/ssr/Download';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
@@ -28,11 +29,26 @@ const Page = () => {
         console.log(token); // Retrieve token from local storage
         const headers = { 'x-auth-token': token };
 
-        const response = await axios.get('http://127.0.0.1:5500/api/clients/specific', { headers });
-        console.log(response);
-        setCustomers(response.data);
+        // Fetch clients
+        const clientsResponse = await axios.get(`${API_URL}/api/clients/specific`, { headers });
+        console.log(clientsResponse);
+        const clients = clientsResponse.data;
+
+        // Fetch pending tasks for each client
+        const clientsWithTasks = await Promise.all(
+          clients.map(async (client) => {
+            const tasksResponse = await axios.get(`${API_URL}/api/tasks/pending/${client._id}`, { headers });
+            return {
+              ...client,
+              pendingTasksCount: tasksResponse.data.length,
+            };
+          })
+        );
+
+        // Set state with clients and their pending tasks
+        setCustomers(clientsWithTasks);
       } catch (error) {
-        console.error('Error fetching clients:', error);
+        console.error('Error fetching clients and tasks:', error);
       }
     };
 
@@ -63,7 +79,7 @@ const Page = () => {
           </Button>
         </div>
       </Stack>
-      <CustomersFilters />
+      {/* <CustomersFilters /> */}
       <CustomersTable
         count={paginatedCustomers.length}
         page={page}

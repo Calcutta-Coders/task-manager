@@ -3,6 +3,7 @@
 import { format } from 'path';
 
 import * as React from 'react';
+import { API_URL } from '@/constants';
 import Grid from '@mui/material/Grid';
 import axios from 'axios';
 import dayjs from 'dayjs';
@@ -13,7 +14,7 @@ import { TotalCustomers } from '@/components/dashboard/overview/total-customers'
 import { TotalProfit } from '@/components/dashboard/overview/total-profit';
 
 const axiosInstance = axios.create({
-  baseURL: 'http://127.0.0.1:5500/api',
+  baseURL: `${API_URL}/api`,
 });
 
 export default function Page(): React.JSX.Element {

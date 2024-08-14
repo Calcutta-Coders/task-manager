@@ -1,5 +1,6 @@
 'use client';
 
+import { API_URL } from '@/constants';
 import axios from 'axios';
 
 // Example usage
@@ -8,7 +9,7 @@ import type { User } from '@/types/user';
 
 async function login(email: any, password: any) {
   try {
-    const response = await axios.post('http://127.0.0.1:5500/api/auth/login', {
+    const response = await axios.post(`${API_URL}/api/auth/login`, {
       email,
       password,
     });
@@ -33,7 +34,7 @@ async function login(email: any, password: any) {
 
 async function signup(firstName: string, lastName: string, email: string, password: string, team: string, key: string) {
   try {
-    const response = await axios.post('http://localhost:5500/api/auth/signup', {
+    const response = await axios.post(`${API_URL}/api/auth/signup`, {
       firstName,
       lastName,
       email,

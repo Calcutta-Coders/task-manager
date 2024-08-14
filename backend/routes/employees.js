@@ -17,6 +17,20 @@ router.get("/", auth, async (req, res) => {
   }
 });
 
+// GET /api/employees/me
+// Get all employees
+router.get("/me", auth, async (req, res) => {
+  try {
+    const employees = await Employee.findById(req.user.id).select(
+      "firstName lastName role email team"
+    );
+    res.json(employees);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+});
+
 router.get("/count", auth, async (req, res) => {
   try {
     const employees = await Employee.findById(req.user.id);

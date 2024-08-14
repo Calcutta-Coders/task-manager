@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { API_URL } from '@/constants';
 import Avatar from '@mui/material/Avatar';
 import Badge from '@mui/material/Badge';
 import Box from '@mui/material/Box';
@@ -26,13 +27,14 @@ export function MainNav(): React.JSX.Element {
     const fetchEmployee = async () => {
       try {
         const token = localStorage.getItem('custom-auth-token');
-        const response = await axios.get('http://127.0.0.1:5500/api/employees', {
+        const response = await axios.get(`${API_URL}/api/employees/me`, {
           headers: {
             'x-auth-token': token,
           },
         });
-        if (response.data && response.data.length > 0) {
-          setEmployee(response.data[0]); // Assuming we want to display the first employee
+        console.log(response);
+        if (response.data) {
+          setEmployee(response.data); // Assuming we want to display the first employee
         }
       } catch (error) {
         console.error('Error fetching employee data:', error);

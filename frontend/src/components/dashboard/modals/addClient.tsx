@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { API_URL } from '@/constants';
 import {
   Box,
   Button,
@@ -44,7 +45,7 @@ const AddClientModal: React.FC<AddClientModalProps> = ({ open, onClose, onAddCli
 
   // Create an Axios instance with default headers
   const axiosInstance = axios.create({
-    baseURL: 'http://127.0.0.1:5500/api', // Adjust this if your API has a different base URL
+    baseURL: `${API_URL}/api`, // Adjust this if your API has a different base URL
     headers: {
       'x-auth-token': `${localStorage.getItem('custom-auth-token')}`, // Assuming you store the token in localStorage
     },
