@@ -58,7 +58,7 @@ const AddClientModal: React.FC<AddClientModalProps> = ({ open, onClose, onAddCli
         params: { search },
       });
       setClients(response.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching clients:', error);
       // Handle error (e.g., show error message to user)
     } finally {
@@ -79,7 +79,7 @@ const AddClientModal: React.FC<AddClientModalProps> = ({ open, onClose, onAddCli
       const response = await axiosInstance.post<Client>('/clients', newClient);
       onAddClient(response.data);
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error adding client:', error);
       // Handle error (e.g., show error message to user)
     }
@@ -90,7 +90,7 @@ const AddClientModal: React.FC<AddClientModalProps> = ({ open, onClose, onAddCli
       console.log(clientId);
       await axiosInstance.post('/clients/add-to-employee', { clientId });
       onClose(); // Close the modal if the client is successfully added
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error adding client to employee:', error);
       if (error.response && error.response.status === 400) {
         setError("Client already added to employee's list");

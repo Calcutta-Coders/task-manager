@@ -420,8 +420,8 @@ export function AllTasks({ clientId }: any): React.JSX.Element {
     }
   };
 
-  const handleFileUpload = async (files: any) => {
-    setFiles(Array.from(event?.target?.files));
+  const handleFileUpload = async (event: any) => {
+    setFiles(Array.from(event.target.files));
   };
 
   const updateTaskInState = (updatedTask: Task) => {
@@ -439,7 +439,7 @@ export function AllTasks({ clientId }: any): React.JSX.Element {
   const sortedTasks = React.useMemo(() => {
     let sortableTasks = [...tasks];
     if (sortConfig !== null) {
-      sortableTasks.sort((a, b) => {
+      sortableTasks.sort((a: any, b: any) => {
         if (a[sortConfig.key] < b[sortConfig.key]) {
           return sortConfig.direction === 'asc' ? -1 : 1;
         }

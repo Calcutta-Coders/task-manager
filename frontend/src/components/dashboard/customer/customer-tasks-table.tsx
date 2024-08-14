@@ -384,7 +384,7 @@ export function CustomerTasksTable({ clientId }: any): React.JSX.Element {
     try {
       console.log(updatedTask);
       const formData = new FormData();
-      Object.entries(updatedTask).forEach(([key, value]) => {
+      Object.entries(updatedTask).forEach(([key, value]: any) => {
         formData.append(key, value);
       });
       console.log(files);
@@ -416,7 +416,7 @@ export function CustomerTasksTable({ clientId }: any): React.JSX.Element {
     }
   };
 
-  const handleFileUpload = async (files: File[]) => {
+  const handleFileUpload = async (event: any) => {
     setFiles(Array.from(event.target.files));
   };
 
@@ -435,7 +435,7 @@ export function CustomerTasksTable({ clientId }: any): React.JSX.Element {
   const sortedTasks = React.useMemo(() => {
     let sortableTasks = [...tasks];
     if (sortConfig !== null) {
-      sortableTasks.sort((a, b) => {
+      sortableTasks.sort((a: any, b: any) => {
         if (a[sortConfig.key] < b[sortConfig.key]) {
           return sortConfig.direction === 'asc' ? -1 : 1;
         }

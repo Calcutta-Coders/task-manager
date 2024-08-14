@@ -17,7 +17,7 @@ import TableRow from '@mui/material/TableRow';
 import { ArrowRight as ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight';
 import dayjs from 'dayjs';
 
-const statusMap = {
+const statusMap: any = {
   Pending: { label: 'Pending', color: 'warning' },
   // delivered: { label: 'Complete', color: 'success' },
   'To do': { label: 'To do', color: 'error' },
@@ -27,16 +27,16 @@ export interface Order {
   id: string;
   customer: { name: string };
   amount: number;
-  status: 'pending' | 'delivered' | 'refunded';
+  status: 'Pending' | 'To do' | 'Completed';
   createdAt: Date;
 }
 
-export interface LatestOrdersProps {
-  orders?: Order[];
-  sx?: SxProps;
-}
+// export interface LatestOrdersProps {
+//   orders?: Order[];
+//   sx?: SxProps;
+// }
 
-export function LatestOrders({ orders = [], sx }: LatestOrdersProps): React.JSX.Element {
+export function LatestOrders({ orders = [], sx }: any): React.JSX.Element {
   const router = useRouter();
   return (
     <Card sx={sx}>
@@ -53,7 +53,7 @@ export function LatestOrders({ orders = [], sx }: LatestOrdersProps): React.JSX.
             </TableRow>
           </TableHead>
           <TableBody>
-            {orders.map((order) => {
+            {orders.map((order: any) => {
               const { label, color } = statusMap[order.status] ?? { label: 'Unknown', color: 'default' };
 
               return (

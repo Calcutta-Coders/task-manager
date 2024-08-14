@@ -52,7 +52,7 @@ export function SideNav(): React.JSX.Element {
     >
       <Stack spacing={2} sx={{ p: 3 }}>
         <Box component={RouterLink} href={paths.home} sx={{ display: 'inline-flex' }}>
-          <Typography style={{ color: 'white', weight: '700' }}>Task Manager</Typography>
+          <Typography style={{ color: 'white' }}>Task Manager</Typography>
         </Box>
         {/* <Box
           sx={{

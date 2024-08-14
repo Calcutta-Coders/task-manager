@@ -65,11 +65,11 @@ function generateToken(): string {
 
 const user = {
   id: 'USR-000',
-  avatar: '/assets/avatar.png',
+  // avatar: '/assets/avatar.png',
   firstName: 'Sofia',
   lastName: 'Rivers',
   email: 'sofia@devias.io',
-} satisfies User;
+};
 
 export interface SignUpParams {
   firstName: string;
@@ -129,7 +129,7 @@ class AuthClient {
     return { error: 'Update reset not implemented' };
   }
 
-  async getUser(): Promise<{ data?: User | null; error?: string }> {
+  async getUser(): Promise<{ data?: any | null; error?: string }> {
     // Make API request
 
     // We do not handle the API, so just check if we have a token in localStorage.

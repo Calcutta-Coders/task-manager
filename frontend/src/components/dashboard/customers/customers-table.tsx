@@ -24,12 +24,13 @@ function noop(): void {
 }
 
 export interface Customer {
-  id: string;
+  _id: string;
   avatar: string;
   name: string;
   email: string;
   address: { city: string; state: string; country: string; street: string };
   phone: string;
+  company: string;
   pendingTasksCount: number;
   createdAt: Date;
 }
@@ -48,7 +49,7 @@ export function CustomersTable({
   rowsPerPage = 0,
 }: CustomersTableProps): React.JSX.Element {
   const rowIds = React.useMemo(() => {
-    return rows.map((customer) => customer.id);
+    return rows.map((customer) => customer._id);
   }, [rows]);
 
   const { selectAll, deselectAll, selectOne, deselectOne, selected } = useSelection(rowIds);
@@ -88,7 +89,7 @@ export function CustomersTable({
           </TableHead>
           <TableBody>
             {rows.map((row) => {
-              const isSelected = selected?.has(row.id);
+              const isSelected = selected?.has(row._id);
               console.log(row);
               return (
                 <TableRow hover key={row._id} selected={isSelected} onClick={() => handleRowClick(row._id)}>

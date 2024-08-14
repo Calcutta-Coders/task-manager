@@ -53,9 +53,9 @@ export function UserPopover({ anchorEl, onClose, open, employee }: UserPopoverPr
     }
   }, [checkSession, router]);
 
-  if (!employee) {
-    return null; // Or you could return a loading state here
-  }
+  // if (!employee) {
+  //   return null; // Or you could return a loading state here
+  // }
 
   return (
     <Popover
@@ -66,9 +66,9 @@ export function UserPopover({ anchorEl, onClose, open, employee }: UserPopoverPr
       slotProps={{ paper: { sx: { width: '240px' } } }}
     >
       <Box sx={{ p: '16px 20px ' }}>
-        <Typography variant="subtitle1">{`${employee.firstName} ${employee.lastName}`}</Typography>
+        <Typography variant="subtitle1">{`${employee?.firstName} ${employee?.lastName}`}</Typography>
         <Typography color="text.secondary" variant="body2">
-          {employee.role}
+          {employee?.role}
         </Typography>
       </Box>
       <Divider />

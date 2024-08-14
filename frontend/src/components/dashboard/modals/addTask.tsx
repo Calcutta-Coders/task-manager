@@ -84,7 +84,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ open, onClose, onAddTask, c
     setError('');
     try {
       const formData = new FormData();
-      Object.entries(newTask).forEach(([key, value]) => {
+      Object.entries(newTask).forEach(([key, value]: any) => {
         formData.append(key, value);
       });
       console.log(files);
