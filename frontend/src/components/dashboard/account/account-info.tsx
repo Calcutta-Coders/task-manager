@@ -11,7 +11,7 @@ import Typography from '@mui/material/Typography';
 import axios from 'axios';
 
 export function AccountInfo(): React.JSX.Element {
-  const [employee, setEmployee] = React.useState(null);
+  const [employee, setEmployee] = React.useState<any>(null);
 
   React.useEffect(() => {
     const fetchEmployee = async () => {

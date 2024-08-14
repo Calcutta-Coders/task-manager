@@ -36,7 +36,7 @@ const Page = () => {
 
         // Fetch pending tasks for each client
         const clientsWithTasks = await Promise.all(
-          clients.map(async (client) => {
+          clients.map(async (client: any) => {
             const tasksResponse = await axios.get(`${API_URL}/api/tasks/pending/${client._id}`, { headers });
             return {
               ...client,

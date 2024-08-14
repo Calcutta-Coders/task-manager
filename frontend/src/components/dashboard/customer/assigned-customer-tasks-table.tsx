@@ -46,10 +46,6 @@ export interface Task {
   attachments?: Array<{ filename: string; path: string; mimetype: string; size: number; uploadDate: string }>;
 }
 
-interface CustomerTasksTableProps {
-  clientId: string;
-}
-
 const axiosInstance = axios.create({
   baseURL: `${API_URL}/api`,
 });
@@ -252,7 +248,7 @@ function EditTaskModal({ open, onClose, onSave, task, onFileUpload }: EditTaskMo
   );
 }
 
-export function AssignedCustomerTasksTable({ clientId }: CustomerTasksTableProps): React.JSX.Element {
+export function AssignedCustomerTasksTable({ clientId }: any): React.JSX.Element {
   const [tasks, setTasks] = React.useState<Task[]>([]);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [selectedTaskId, setSelectedTaskId] = React.useState<string | null>(null);

@@ -66,10 +66,10 @@ export default function Page(): React.JSX.Element {
     <Grid container spacing={3} justifyContent="center">
       <Grid item container xs={12} md={8} lg={6} spacing={3} justifyContent="center">
         <Grid item xs={12} sm={6}>
-          <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value={totalCustomers} />
+          <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value={totalCustomers.toString()} />
         </Grid>
         <Grid item xs={12} sm={6}>
-          <TotalProfit sx={{ height: '100%' }} value={pendingTasks.length} />
+          <TotalProfit sx={{ height: '100%' }} value={pendingTasks.length.toString()} />
         </Grid>
       </Grid>
       <Grid item xs={12}>

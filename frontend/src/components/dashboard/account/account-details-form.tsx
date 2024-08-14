@@ -13,7 +13,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 import axios from 'axios';
 
 export function AccountDetailsForm(): React.JSX.Element {
-  const [employee, setEmployee] = React.useState(null);
+  const [employee, setEmployee] = React.useState<any>(null);
 
   React.useEffect(() => {
     const fetchEmployee = async () => {

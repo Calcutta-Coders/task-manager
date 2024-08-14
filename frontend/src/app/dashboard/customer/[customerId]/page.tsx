@@ -74,26 +74,7 @@ const Page = () => {
       try {
         // Your existing task fetching logic here
         // For now, we'll keep the dummy data
-        setTasks([
-          {
-            id: '1',
-            assigned: '2023-07-01',
-            assignee: 'John Doe',
-            name: 'Review Contract',
-            description: 'Review and approve the new contract',
-            dueDate: '2023-07-15',
-            status: 'In Progress',
-          },
-          {
-            id: '2',
-            assigned: '2023-07-02',
-            assignee: 'Jane Smith',
-            name: 'Prepare Presentation',
-            description: 'Prepare quarterly review presentation',
-            dueDate: '2023-07-20',
-            status: 'Not Started',
-          },
-        ]);
+        setTasks([]);
       } catch (error) {
         console.error('Error fetching tasks:', error);
       }
@@ -103,7 +84,7 @@ const Page = () => {
     fetchTasks();
   }, [customerId]);
 
-  const handleAddTask = (newTask: Task) => {
+  const handleAddTask = (newTask: any) => {
     setTasks([...tasks, newTask]);
   };
 
@@ -156,13 +137,13 @@ const Page = () => {
       <Typography variant="h5">Tasks</Typography>
       {/* <CustomerFilters /> */}
       <Typography variant="h6">Assigned to Me</Typography>
-      <CustomerTasksTable clientId={customerId} tasks={tasks} clientDetails={clientDetails} />
+      <CustomerTasksTable clientId={customerId} />
       <Typography variant="h6">Assigned by Me</Typography>
-      <AssignedCustomerTasksTable clientId={customerId} tasks={tasks} clientDetails={clientDetails} />
+      <AssignedCustomerTasksTable clientId={customerId} />
       {role === 'advisor' && (
         <>
           <Typography variant="h6">All Tasks</Typography>
-          <AllTasks clientId={customerId} tasks={tasks} clientDetails={clientDetails} />
+          <AllTasks clientId={customerId} />
         </>
       )}
       <AddTaskModal

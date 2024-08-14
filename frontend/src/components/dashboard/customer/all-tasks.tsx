@@ -252,7 +252,7 @@ function EditTaskModal({ open, onClose, onSave, task, onFileUpload }: EditTaskMo
   );
 }
 
-export function AllTasks({ clientId }: CustomerTasksTableProps): React.JSX.Element {
+export function AllTasks({ clientId }: any): React.JSX.Element {
   const [tasks, setTasks] = React.useState<Task[]>([]);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [selectedTaskId, setSelectedTaskId] = React.useState<string | null>(null);
@@ -384,11 +384,11 @@ export function AllTasks({ clientId }: CustomerTasksTableProps): React.JSX.Eleme
       // You might want to show an error message to the user here
     }
   };
-  const handleSaveEditedTask = async (updatedTask: Partial<Task>) => {
+  const handleSaveEditedTask = async (updatedTask: any) => {
     try {
       console.log(updatedTask);
       const formData = new FormData();
-      Object.entries(updatedTask).forEach(([key, value]) => {
+      Object.entries(updatedTask).forEach(([key, value]: any) => {
         formData.append(key, value);
       });
       console.log(files);
@@ -420,8 +420,8 @@ export function AllTasks({ clientId }: CustomerTasksTableProps): React.JSX.Eleme
     }
   };
 
-  const handleFileUpload = async (files: File[]) => {
-    setFiles(Array.from(event.target.files));
+  const handleFileUpload = async (files: any) => {
+    setFiles(Array.from(event?.target?.files));
   };
 
   const updateTaskInState = (updatedTask: Task) => {
