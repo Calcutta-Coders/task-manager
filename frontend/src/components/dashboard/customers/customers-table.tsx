@@ -47,9 +47,9 @@ export function CustomersTable({
   rows = [],
   // page = 0,
   // rowsPerPage = 0,
-}): React.JSX.Element {
+}: any): React.JSX.Element {
   const rowIds = React.useMemo(() => {
-    return rows.map((customer) => customer._id);
+    return rows.map((customer: any) => customer._id);
   }, [rows]);
 
   const { selectAll, deselectAll, selectOne, deselectOne, selected } = useSelection(rowIds);
@@ -88,7 +88,7 @@ export function CustomersTable({
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => {
+            {rows.map((row: any) => {
               const isSelected = selected?.has(row._id);
               console.log(row);
               return (

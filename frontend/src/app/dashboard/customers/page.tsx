@@ -55,7 +55,7 @@ const Page = () => {
     fetchClients();
   }, []);
 
-  const paginatedCustomers = customers;
+  const paginatedCustomers: any = customers;
 
   const handleAddClient = (client: any) => {
     // Here you can make an API call to add the client to the server
@@ -80,12 +80,7 @@ const Page = () => {
         </div>
       </Stack>
       {/* <CustomersFilters /> */}
-      <CustomersTable
-        count={paginatedCustomers.length}
-        page={page}
-        rows={paginatedCustomers}
-        rowsPerPage={rowsPerPage}
-      />
+      <CustomersTable count={paginatedCustomers.length} rows={customers} />
       <AddClientModal open={isModalOpen} onClose={() => setIsModalOpen(false)} onAddClient={handleAddClient} />
     </Stack>
   );
