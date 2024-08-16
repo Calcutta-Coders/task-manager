@@ -206,8 +206,15 @@ router.put("/:id/status", auth, async (req, res) => {
     task.status = status;
     task.updatedAt = Date.now();
     await task.save();
+    const response = await Task.findById(req.params.id)
+      .populate("from", "firstName lastName")
+      .populate("to", "firstName lastName")
+      .populate("client", "name")
+      .select(
+        "title description status dueDate createdAt updatedAt attachments"
+      );
 
-    res.json(task);
+    res.json(response);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
@@ -265,8 +272,16 @@ router.put("/:id", auth, upload.array("files", 5), async (req, res) => {
     }
 
     task.updatedAt = Date.now();
+
     await task.save();
-    res.json(task);
+    const response = await Task.findById(req.params.id)
+      .populate("from", "firstName lastName")
+      .populate("to", "firstName lastName")
+      .populate("client", "name")
+      .select(
+        "title description status dueDate createdAt updatedAt attachments"
+      );
+    res.json(response);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");

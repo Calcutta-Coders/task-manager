@@ -45,9 +45,9 @@ interface CustomersTableProps {
 export function CustomersTable({
   count = 0,
   rows = [],
-  page = 0,
-  rowsPerPage = 0,
-}: CustomersTableProps): React.JSX.Element {
+  // page = 0,
+  // rowsPerPage = 0,
+}): React.JSX.Element {
   const rowIds = React.useMemo(() => {
     return rows.map((customer) => customer._id);
   }, [rows]);
@@ -122,7 +122,7 @@ export function CustomersTable({
         </Table>
       </Box>
       <Divider />
-      <TablePagination
+      {/* <TablePagination
         component="div"
         count={count}
         onPageChange={noop}
@@ -130,7 +130,7 @@ export function CustomersTable({
         page={page}
         rowsPerPage={rowsPerPage}
         rowsPerPageOptions={[5, 10, 25]}
-      />
+      /> */}
     </Card>
   );
 }

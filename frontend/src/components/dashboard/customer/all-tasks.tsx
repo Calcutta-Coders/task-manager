@@ -265,7 +265,11 @@ export function AllTasks({ clientId }: any): React.JSX.Element {
   const [taskDetailsModalOpen, setTaskDetailsModalOpen] = React.useState(false);
   const [selectedTask, setSelectedTask] = React.useState<Task | null>(null);
 
-  const handleTaskClick = (task: Task) => {
+  const handleTaskClick = (event: any, task: Task) => {
+    if (event.target instanceof Node && event.currentTarget.lastElementChild?.contains(event.target)) {
+      // Click was in the actions cell, do nothing
+      return;
+    }
     setSelectedTask(task);
     setTaskDetailsModalOpen(true);
   };
@@ -302,6 +306,7 @@ export function AllTasks({ clientId }: any): React.JSX.Element {
   }, [clientId]);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>, taskId: string) => {
+    event.stopPropagation(); // Add this line
     setAnchorEl(event.currentTarget);
     setSelectedTaskId(taskId);
   };
@@ -350,6 +355,8 @@ export function AllTasks({ clientId }: any): React.JSX.Element {
             );
             updateTaskInState(updatedTask.data);
             break;
+
+            window.location.reload();
         }
       } catch (error) {
         console.error('Error updating task:', error);
@@ -510,7 +517,7 @@ export function AllTasks({ clientId }: any): React.JSX.Element {
         </TableHead>
         <TableBody>
           {sortedTasks.map((task) => (
-            <TableRow key={task._id} onClick={() => handleTaskClick(task)} style={{ cursor: 'pointer' }}>
+            <TableRow key={task._id} onClick={() => handleTaskClick(event, task)} style={{ cursor: 'pointer' }}>
               <TableCell>{`${task.to.firstName} ${task.to.lastName}`}</TableCell>
               <TableCell>{`${task.from.firstName} ${task.from.lastName}`}</TableCell>
               <TableCell>{task.title}</TableCell>
@@ -543,7 +550,7 @@ export function AllTasks({ clientId }: any): React.JSX.Element {
                   'No files'
                 )}
               </TableCell>
-              <TableCell>
+              <TableCell onClick={(e) => e.preventDefault()}>
                 <IconButton onClick={(event) => handleMenuOpen(event, task._id)}>
                   <MoreVertIcon />
                 </IconButton>

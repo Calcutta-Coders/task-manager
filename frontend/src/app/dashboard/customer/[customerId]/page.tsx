@@ -91,7 +91,7 @@ const Page = () => {
   return (
     <Stack spacing={3}>
       <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
-        <Typography variant="h4">Customer Details</Typography>
+        <Typography variant="h4">Client Details</Typography>
         <Button variant="contained" onClick={() => setIsAddTaskModalOpen(true)}>
           Add Task
         </Button>

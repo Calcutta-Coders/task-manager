@@ -297,6 +297,7 @@ export function AssignedCustomerTasksTable({ clientId }: any): React.JSX.Element
   }, [clientId]);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>, taskId: string) => {
+    event.stopPropagation();
     setAnchorEl(event.currentTarget);
     setSelectedTaskId(taskId);
   };
@@ -343,6 +344,7 @@ export function AssignedCustomerTasksTable({ clientId }: any): React.JSX.Element
               { status: 'Pending' },
               { headers }
             );
+            console.log(updatedTask.data);
             updateTaskInState(updatedTask.data);
             break;
         }
@@ -351,6 +353,7 @@ export function AssignedCustomerTasksTable({ clientId }: any): React.JSX.Element
         setError('Failed to update task. Please try again.');
       }
     }
+    // window.location.reload();
     handleMenuClose();
   };
   const handleFileDownload = async (file: { filename: string; path: string }) => {
@@ -402,6 +405,7 @@ export function AssignedCustomerTasksTable({ clientId }: any): React.JSX.Element
           'x-auth-token': token,
         },
       });
+      // updateTaskInState(response.data);
       console.log('part 2');
       // Update the task in the local state
       setTasks((prevTasks) =>
@@ -538,7 +542,7 @@ export function AssignedCustomerTasksTable({ clientId }: any): React.JSX.Element
                   'No files'
                 )}
               </TableCell>
-              <TableCell>
+              <TableCell onClick={(event) => event.stopPropagation()}>
                 <IconButton onClick={(event) => handleMenuOpen(event, task._id)}>
                   <MoreVertIcon />
                 </IconButton>

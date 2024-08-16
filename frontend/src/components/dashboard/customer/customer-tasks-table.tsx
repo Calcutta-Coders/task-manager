@@ -298,6 +298,7 @@ export function CustomerTasksTable({ clientId }: any): React.JSX.Element {
   }, [clientId]);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>, taskId: string) => {
+    event.stopPropagation();
     setAnchorEl(event.currentTarget);
     setSelectedTaskId(taskId);
   };
@@ -346,6 +347,8 @@ export function CustomerTasksTable({ clientId }: any): React.JSX.Element {
             );
             updateTaskInState(updatedTask.data);
             break;
+
+            window.location.reload();
         }
       } catch (error) {
         console.error('Error updating task:', error);
@@ -539,7 +542,7 @@ export function CustomerTasksTable({ clientId }: any): React.JSX.Element {
                   'No files'
                 )}
               </TableCell>
-              <TableCell>
+              <TableCell onClick={(e) => e.preventDefault()}>
                 <IconButton onClick={(event) => handleMenuOpen(event, task._id)}>
                   <MoreVertIcon />
                 </IconButton>

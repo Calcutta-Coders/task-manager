@@ -98,7 +98,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ open, onClose, onAddTask, c
         },
       });
       console.log('Task added successfully:', response.data);
-      onAddTask(response.data);
+      window.location.reload();
       onClose();
     } catch (error) {
       console.error('Error adding task:', error);

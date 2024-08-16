@@ -55,7 +55,7 @@ const Page = () => {
     fetchClients();
   }, []);
 
-  const paginatedCustomers = applyPagination(customers, page, rowsPerPage);
+  const paginatedCustomers = customers;
 
   const handleAddClient = (client: any) => {
     // Here you can make an API call to add the client to the server
@@ -66,7 +66,7 @@ const Page = () => {
     <Stack spacing={3}>
       <Stack direction="row" spacing={3}>
         <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
-          <Typography variant="h4">Customers</Typography>
+          <Typography variant="h4">Clients</Typography>
           <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}></Stack>
         </Stack>
         <div>
@@ -90,9 +90,5 @@ const Page = () => {
     </Stack>
   );
 };
-
-function applyPagination(rows: Customer[], page: number, rowsPerPage: number): Customer[] {
-  return rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-}
 
 export default Page;
